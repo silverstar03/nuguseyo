@@ -15,6 +15,8 @@ class StudentUI(QWidget):
         font1 = QtGui.QFont()
         font1.setBold(True)
 
+        self.setStyleSheet("background:rgb(255,0,0)")
+
         self.btn1 = QPushButton('1', self)
         self.btn1.toggle()
         self.btn1.resize(70,70)
@@ -91,7 +93,7 @@ class StudentUI(QWidget):
         self.finish.toggle()
         self.finish.resize(80,30)
         self.finish.setFont(font1)
-        self.finish.clicked.connect(self.student.save)
+        self.finish.clicked.connect(self.check_save)
 
         self.line_edit = QLineEdit('',self)
         self.line_edit.resize(180,40)
@@ -132,7 +134,7 @@ class StudentUI(QWidget):
         arr=self.line_edit.text()
         self.line_edit.setText(arr[0:-1])
 
-    def check_num(self):  # 만들어야 하는 조건 : 이미 카운트 된 이름이라면 또 다시 눌렸을 때 "이미 확인되었습니다" 라고 띄우기
+    def check_num(self):  
         hakbun = self.line_edit.text()
         if hakbun != '':
             self.student.file()
@@ -142,6 +144,9 @@ class StudentUI(QWidget):
             self.message = QMessageBox.warning(self, "QMessageBox", "학번을 입력해주세요.")
         self.line_edit.setText('')
 
+    def check_save(self):
+        self.student.save()
+        self.m=QMessageBox.about(self,'QMessageBox','저장되었습니다.')
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
