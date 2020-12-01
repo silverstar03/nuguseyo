@@ -1,15 +1,16 @@
 import sys
-import numpy as np
-import pandas as pd
 from PyQt5.QtWidgets import *
-from PyQt5 import QtGui
 import matplotlib.pyplot as plt
+from PyQt5 import QtGui
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import datetime
+from Student import Student
+import pandas as pd
 
 class MyWindow(QWidget):
     def __init__(self):
         super().__init__()
+        self.student = Student()
         self.initUI()
         self.setLayout(self.layout)
         self.setGeometry(200, 200, 800, 600)
@@ -20,7 +21,7 @@ class MyWindow(QWidget):
         self.fig = plt.Figure()
         self.canvas = FigureCanvas(self.fig)
         self.setWindowTitle('누구세요')
-        self.setStyleSheet("background:rgb(0,0,128)")
+        self.setStyleSheet("background:rgb(91,153,250)")
         layout = QVBoxLayout()
         layout.addWidget(self.canvas)
         self.cb = QComboBox()
@@ -98,14 +99,11 @@ class MyWindow(QWidget):
 
         df['datetime'] = df['date'].apply(lambda x: pd.to_datetime(str(x), format='%Y-%m-%d'))
         df.set_index(df['datetime'], inplace=True)
-        # df = df.drop('datetime', 1)
 
         weekly_df = pd.DataFrame()
         weekly_df['cnt'] = df['cnt'].resample('W-Fri').sum().fillna(0)
         for i in range(len(weekly_df.index)):
             weekly_df['date'] = weekly_df['cnt'].index
-
-        print(weekly_df)  # 그 주의 금요일 날짜와 총합이 나옴
 
         name = []
         values = []
@@ -126,6 +124,7 @@ class MyWindow(QWidget):
         ax.legend()
 
         self.canvas.draw()
+
         for i, rect in enumerate(rects):
             ax.text(rect.get_x() + rect.get_width() / 2.0, 1.05 * rect.get_height(), str(weekly_df.cnt[i]),
                     ha='center')
