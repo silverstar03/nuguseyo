@@ -4,7 +4,7 @@ import pandas as pd
 from PyQt5.QtWidgets import *
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-
+import datetime
 
 class MyWindow(QWidget):
     def __init__(self):
@@ -14,18 +14,23 @@ class MyWindow(QWidget):
         self.setGeometry(200, 200, 800, 600)
 
     def initUI(self):
+        font1 = QtGui.QFont('나눔바른고딕')
+        font1.setBold(True)
         self.fig = plt.Figure()
         self.canvas = FigureCanvas(self.fig)
-
+        self.setWindowTitle('누구세요')
+        self.setStyleSheet("background:rgb(0,0,128)")
         layout = QVBoxLayout()
         layout.addWidget(self.canvas)
-        cb = QComboBox()
-        cb.addItem('일별')
-        cb.addItem('주별')
-        cb.activated[str].connect(self.onComboBoxChanged)
-        layout.addWidget(cb)
+        self.cb = QComboBox()
+        self.cb.setStyleSheet('background-color:white')
+        self.cb.setFont(font1)
+        self.cb.addItem('일별')
+        self.cb.addItem('주별')
+        self.cb.activated[str].connect(self.onComboBoxChanged)
+        layout.addWidget(self.cb)
         self.layout = layout
-        self.onComboBoxChanged(cb.currentText())
+        self.onComboBoxChanged(self.cb.currentText())
 
     def onComboBoxChanged(self, text):
         if text == '일별':
@@ -33,30 +38,57 @@ class MyWindow(QWidget):
         elif text == '주별':
             self.week_count_student()
 
+    def chage_date(self):
+        d = self.student.date
+        t = datetime.datetime.strptime(d, '%Y-%m-%d')
+        last_monday = t - datetime.timedelta(days=t.weekday())
+        cal = last_monday.isocalendar()
+        day_week = cal[1]
+        return day_week
+
     def day_count_student(self):  # 일별 그래프
+        student = {}
         with open('today_student.txt', 'r', encoding='utf8') as f:
             data = f.readlines()
+            for voc in data:
+                voc = voc.strip().split('\t')
+                student[voc[0]] = voc[1]
 
         row = []
         column = []
         for line in data:
-            li = line.split('\t')
-            row.append(li[0])
-            column.append(int(li[1]))
+            line = line.split('\t')
+            row.append(line[0])
+
+        dic = {}
+        i = self.chage_date()
+
+        for r in row:
+            t = datetime.datetime.strptime(r, '%Y-%m-%d')
+            last = t - datetime.timedelta(days=t.weekday())
+            c = last.isocalendar()
+            dic.setdefault(r, c[1])
+
+        li = []
+        for date, num in dic.items():
+            if num == i:
+                li.append(date)
+        for l in li:
+            if l in student.keys():
+                column.append(int(student.get(l)))
 
         self.fig.clear()
-        ax = self.fig.add_subplot(111) #1X1그리드에 첫번째 subplot
-        ax.set_ylim(0, 10)  #y축의 최대,최솟값 설정
-        rects=ax.bar(row, column, label="student")
+        ax = self.fig.add_subplot(111)
+        ax.set_ylim(0, 10)
+        rects = ax.bar(li, column, label="student")
 
         ax.set_xlabel("date")
-
         ax.set_title("Student")
         ax.legend()
 
         self.canvas.draw()
         for i, rect in enumerate(rects):
-            ax.text(rect.get_x() + rect.get_width() / 2.0, 1.05 * rect.get_height(), str(column[i]) ,
+            ax.text(rect.get_x() + rect.get_width() / 2.0, 1.05 * rect.get_height(), str(column[i]),
                     ha='center')
 
     def week_count_student(self):  # 주별 그래프

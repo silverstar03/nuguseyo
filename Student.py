@@ -2,8 +2,7 @@ import datetime
 
 class Student:
     def __init__(self):
-        self.date='2020-11-27'
-            #datetime.datetime.now().strftime('%Y-%m-%d')
+        self.date=datetime.datetime.now().strftime('%Y-%m-%d')
         self.name=''
         self.number=0
         self.student={}
@@ -12,10 +11,11 @@ class Student:
     def select(self, number):
         self.file()
         for v in self.student.keys():
-            if number==v:
-                self.name=self.student.get(v)
-                print(self.name)
-        self.today_count+=1
+            if number == v:
+                self.name = self.student.get(v)
+                self.today_count += 1
+            else:
+                continue
         return self.name
 
     def file(self):
