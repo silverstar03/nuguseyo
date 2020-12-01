@@ -1,5 +1,6 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLineEdit, QMessageBox
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLineEdit, QMessageBox, \
+    QDesktopWidget
 from PyQt5 import QtGui
 from Student import Student
 
@@ -122,6 +123,7 @@ class StudentUI(QWidget):
 
         self.setGeometry(300, 300, 500, 500)
         self.setWindowTitle('번호 입력')  # 제목
+        self.center()
         self.show()  # 스크린에 보여줌
 
     # def make_button(self,index):
@@ -134,7 +136,7 @@ class StudentUI(QWidget):
         arr=self.line_edit.text()
         self.line_edit.setText(arr[0:-1])
 
-    def check_num(self):  
+    def check_num(self):
         hakbun = self.line_edit.text()
         if hakbun != '':
             self.student.file()
@@ -147,6 +149,12 @@ class StudentUI(QWidget):
     def check_save(self):
         self.student.save()
         self.m=QMessageBox.about(self,'QMessageBox','저장되었습니다.')
+
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
