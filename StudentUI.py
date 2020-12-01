@@ -134,7 +134,7 @@ class StudentUI(QWidget):
         arr=self.line_edit.text()
         self.line_edit.setText(arr[0:-1])
 
-    def check_num(self):  
+    def check_num(self):
         hakbun = self.line_edit.text()
         if hakbun != '':
             self.student.file()
