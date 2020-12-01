@@ -97,22 +97,36 @@ class MyWindow(QWidget):
 
         df['datetime'] = df['date'].apply(lambda x: pd.to_datetime(str(x), format='%Y-%m-%d'))
         df.set_index(df['datetime'], inplace=True)
-        df = df.drop('datetime', 1)
+        # df = df.drop('datetime', 1)
 
-        weekly_df = df['cnt'].resample('W-Fri').sum().fillna(0)
-        print(weekly_df) #그 주의 금요일 날짜와 총합이 나옴
-        print(weekly_df.values) #주별 합계들이 나옴
+        weekly_df = pd.DataFrame()
+        weekly_df['cnt'] = df['cnt'].resample('W-Fri').sum().fillna(0)
+        for i in range(len(weekly_df.index)):
+            weekly_df['date'] = weekly_df['cnt'].index
+
+        print(weekly_df)  # 그 주의 금요일 날짜와 총합이 나옴
+
+        name = []
+        values = []
+
+        for i in range(len(weekly_df['cnt'])):
+            values.append(weekly_df.cnt[i])
+
+        for i in range(len(weekly_df['date'])):
+            date = weekly_df.date[i]
+            s = date.strftime('%Y-%m-%d')
+            name.append(s)
 
         self.fig.clear()
         ax = self.fig.add_subplot(111)
-        rects = ax.bar(weekly_df.index, weekly_df.values, label="student")
+        rects = ax.bar(name, values, label="student")
         ax.set_xlabel("week")
         ax.set_title("Student")
         ax.legend()
 
         self.canvas.draw()
         for i, rect in enumerate(rects):
-            ax.text(rect.get_x() + rect.get_width() / 2.0, 1.05 * rect.get_height(), str(weekly_df.values[i]),
+            ax.text(rect.get_x() + rect.get_width() / 2.0, 1.05 * rect.get_height(), str(weekly_df.cnt[i]),
                     ha='center')
 
     def center(self): #화면 가운데에 띄우기 위해서
