@@ -1,7 +1,7 @@
 import sys
-import numpy as np
 import pandas as pd
 from PyQt5.QtWidgets import *
+from PyQt5 import QtGui
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import datetime
